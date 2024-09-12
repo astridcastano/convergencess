@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Converter Program</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        input, button {
+            margin-top: 10px;
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+        }
+        button {
+            cursor: pointer;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 4px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result, .steps {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #e7f3fe;
+            border-left: 5px solid #007BFF;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Converter Program</h1>
+
+        <!-- Convert Binary to Decimal -->
+        <label for="binaryInput">Enter Binary Number:</label>
+        <input type="text" id="binaryInput" placeholder="e.g., 1010.01">
+        <button onclick="convertBinaryToDecimal()">Convert to Decimal</button>
+
+        <!-- Convert Decimal to Binary -->
+        <label for="decimalInput">Enter Decimal Number:</label>
+        <input type="text" id="decimalInput" placeholder="e.g., 19.28">
+        <button onclick="convertDecimalToBinary()">Convert to Binary</button>
+
+        <!-- Convert Hex to Decimal -->
+        <label for="hexInput">Enter Hexadecimal Number:</label>
+        <input type="text" id="hexInput" placeholder="e.g., 1A3">
+        <button onclick="convertHexToDecimal()">Convert to Decimal</button>
+
+        <!-- Convert Decimal to Hex -->
+        <label for="decimalHexInput">Enter Decimal Number:</label>
+        <input type="text" id="decimalHexInput" placeholder="e.g., 475.234">
+        <button onclick="convertDecimalToHex()">Convert to Hexadecimal</button>
+
+        <!-- Binary Addition -->
+        <label for="binAdd1">Enter First Binary Number:</label>
+        <input type="text" id="binAdd1" placeholder="e.g., 010111">
+        <label for="binAdd2">Enter Second Binary Number:</label>
+        <input type="text" id="binAdd2" placeholder="e.g., 01010">
+        <button onclick="binaryAddition()">Binary Addition (2's complement)</button>
+
+        <!-- Binary Subtraction -->
+        <label for="binSub1">Enter First Binary Number:</label>
+        <input type="text" id="binSub1" placeholder="e.g., 010000">
+        <label for="binSub2">Enter Second Binary Number:</label>
+        <input type="text" id="binSub2" placeholder="e.g., 0111">
+        <button onclick="binarySubtraction()">Binary Subtraction (2's complement)</button>
+
+        <!-- Binary Multiplication -->
+        <label for="binMul1">Enter First Binary Number:</label>
+        <input type="text" id="binMul1" placeholder="e.g., 0101">
+        <label for="binMul2">Enter Second Binary Number:</label>
+        <input type="text" id="binMul2" placeholder="e.g., 1111">
+        <button onclick="binaryMultiplication()">Binary Multiplication</button>
+
+        <!-- Convert to Signed Magnitude, 1's Complement, 2's Complement -->
+        <label for="signedNum">Enter an Integer Number:</label>
+        <input type="text" id="signedNum" placeholder="e.g., -239 or 432">
+        <button onclick="convertToSigned()">Convert to Signed Magnitude, 1's Complement, 2's Complement</button>
+
+        <!-- Convert to IEEE 754 -->
+        <label for="floatNum">Enter a Floating-Point Number:</label>
+        <input type="text" id="floatNum" placeholder="e.g., -19.28 or 288.67">
+        <button onclick="convertToIEEE754()">Convert to IEEE 754 (32-bit float)</button>
+
+        <!-- Display Result -->
+        <div id="result" class="result"></div>
+        <div id="steps" class="steps"></div>
+    </div>
+
+    <script>
+        function convertBinaryToDecimal() {
+            let binary = document.getElementById('binaryInput').value;
+            let decimal = 0;
+            let point = binary.indexOf('.');
+
+            let steps = "Step-by-Step Conversion for Binary to Decimal:<br>";
+
+            if (point === -1) point = binary.length;
+
+            let two = 1;
+            steps += "1. Converting the integer part to decimal:<br>";
+            for (let i = point - 1; i >= 0; --i) {
+                if (binary[i] === '1') {
+                    decimal += two;
+                    steps += "Adding " + two + " to the decimal value.<br>";
+                }
+                two <<= 1;
+            }
+
+            two = 2;
+            steps += "2. Converting the fractional part to decimal:<br>";
+            for (let i = point + 1; i < binary.length; ++i) {
+                if (binary[i] === '1') {
+                    decimal += 1.0 / two;
+                    steps += "Adding " + (1.0 / two) + " to the decimal value.<br>";
+                }
+                two <<= 1;
+            }
+
+            steps += "Final decimal value: " + decimal + "<br>";
+            document.getElementById('result').innerText = `Binary ${binary} = Decimal ${decimal}`;
+            document.getElementById('steps').innerHTML = steps;
+        }
+
+        function convertDecimalToBinary() {
+            let num = parseFloat(document.getElementById('decimalInput').value);
+            let binary = "";
+            let integral = Math.floor(num);
+            let fractional = num - integral;
+
+            let steps = "Step-by-Step Conversion for Decimal to Binary:<br>";
+
+            steps += "1. Converting the integer part to binary:<br>";
+            while (integral) {
+                let rem = integral % 2;
+                binary = rem + binary;
+                steps += "Appending " + rem + " to the binary string.<br>";
+                integral = Math.floor(integral / 2);
+            }
+
+            binary += '.';
+
+            steps += "2. Converting the fractional part to binary:<br>";
+            while (fractional) {
+                fractional *= 2;
+                let bit = Math.floor(fractional);
+                binary += bit;
+                steps += "Appending " + bit + " to the binary string.<br>";
+                fractional -= bit;
+                if (binary.length > 32) break;  // Limit length to avoid infinite loop
+            }
+
+            steps += "Final binary value: " + binary + "<br>";
+            document.getElementById('result').innerText = `Decimal ${num} = Binary ${binary}`;
+            document.getElementById('steps').innerHTML = steps;
+        }
+
+        function convertHexToDecimal() {
+            let hex = document.getElementById('hexInput').value;
+            let decimal = parseInt(hex, 16);
+            let steps = "Step-by-Step Conversion for Hexadecimal to Decimal:<br>";
+            steps += "1. Converting the hexadecimal number to decimal.<br>";
+            steps += "Final decimal value: " + decimal + "<br>";
+            document.getElementById('result').innerText = `Hexadecimal ${hex} = Decimal ${decimal}`;
+            document.getElementById('steps').innerHTML = steps;
+        }
+
+        function convertDecimalToHex() {
+            let num = parseFloat(document.getElementById('decimalHexInput').value);
+            let hex = num.toString(16);
+            let steps = "Step-by-Step Conversion for Decimal to Hexadecimal:<br>";
+            steps += "1. Converting the decimal number to hexadecimal.<br>";
+            steps += "Final hexadecimal value: " + hex + "<br>";
+            document.getElementById('result').innerText = `Decimal ${num} = Hexadecimal ${hex}`;
+            document.getElementById('steps').innerHTML = steps;
+        }
+
+        function binaryAddition() {
+            let bin1 = document.getElementById('binAdd1').value;
+            let bin2 = document.getElementById('binAdd2').value;
+            let result = (parseInt(bin1, 2) + parseInt(bin2, 2)).toString(2);
+            let steps = "Step-by-Step Binary Addition (2's Complement):<br>";
+            steps += "1. First binary number: " + bin1 + "<br>";
+            steps += "2. Second binary number: " + bin2 + "<br>";
+            steps += "3. Result of addition: " + result + "<br>";
+            document.getElementById('result').innerText = `Binary Addition Result = ${result}`;
+            document.getElementById('steps').innerHTML = steps;
+        }
+
+        function binarySubtraction() {
+            let bin1 = document.getElementById('binSub1').value;
+            let bin2 = document.getElementById('binSub2').value;
+            let result = (parseInt(bin1, 2) - parseInt(bin2, 2)).toString(2);
+            let steps = "Step-by-Step Binary Subtraction (2's Complement):<br>";
+            steps += "1. First binary number: " + bin1 + "<br>";
+            steps += "2. Second binary number: " + bin2 + "<br>";
+            steps += "3. Result of subtraction: " + result + "<br>";
+            document.getElementById('result').innerText = `Binary Subtraction Result = ${result}`;
+            document.getElementById('steps').innerHTML = steps;
+        }
+
+        function binaryMultiplication() {
+            let bin1 = document.getElementById('binMul1').value;
+            let bin2 = document.getElementById('binMul2').value;
+            let result = (parseInt(bin1, 2) * parseInt(bin2, 2)).toString(2);
+            let steps = "Step-by-Step Binary Multiplication:<br>";
+            steps += "1. First binary number: " + bin1 + "<br>";
+            steps += "2. Second binary number: " + bin2 + "<br>";
+            steps += "3. Result of multiplication: " + result + "<br>";
+            document.getElementById('result').innerText = `Binary Multiplication Result = ${result}`;
+            document.getElementById('steps').innerHTML = steps;
+        }
+
+        function convertToSigned() {
+            let num = parseInt(document.getElementById('signedNum').value);
+            let signBit = num < 0 ? 1 : 0;
+            let magnitude = Math.abs(num).toString(2);
+            let signedMagnitude = (signBit === 1 ? "1" : "0") + magnitude.padStart(8, '0');
+            let onesComplement = signedMagnitude.split('').map(bit => bit === '1' ? '0' : '1').join('');
+            let twosComplement = (parseInt(onesComplement, 2) + 1).toString(2).padStart(8, '0');
+
+            let steps = "Step-by-Step Conversion to Signed Magnitude, 1's Complement, 2's Complement:<br>";
+            steps += "1. Number: " + num + "<br>";
+            steps += "2. Signed Magnitude: " + signedMagnitude + "<br>";
+            steps += "3. 1's Complement: " + onesComplement + "<br>";
+            steps += "4. 2's Complement: " + twosComplement + "<br>";
+
+            document.getElementById('result').innerText = `Signed Magnitude = ${signedMagnitude}, 1's Complement = ${onesComplement}, 2's Complement = ${twosComplement}`;
+            document.getElementById('steps').innerHTML = steps;
+        }
+
+        function convertToIEEE754() {
+            let num = parseFloat(document.getElementById('floatNum').value);
+            let signBit = num < 0 ? 1 : 0;
+            let absNum = Math.abs(num);
+            let intPart = Math.floor(absNum);
+            let fracPart = absNum - intPart;
+            let intBinary = intPart.toString(2);
+            let fracBinary = '';
+
+            let steps = "Step-by-Step Conversion for " + num + ":<br>";
+
+            steps += "1. Sign Bit: " + signBit + " (0 for positive, 1 for negative)<br>";
+
+            steps += "2. Absolute value of the number: " + absNum + "<br>";
+
+            steps += "3. Integer part in binary: " + intBinary + "<br>";
+
+            steps += "4. Fractional part in binary: ";
+            while (fracPart !== 0 && fracBinary.length < 23) {
+                fracPart *= 2;
+                let bit = Math.floor(fracPart);
+                fracBinary += bit;
+                fracPart -= bit;
+            }
+            steps += fracBinary + "<br>";
+
+            let fullBinary = intBinary + '.' + fracBinary;
+            let exponent = intBinary.length - 1;
+            let normalized = '1.' + fullBinary.slice(1).replace('.', '');
+            let biasedExponent = (exponent + 127).toString(2);
+            let mantissa = normalized.slice(2).padEnd(23, '0');
+
+            steps += "5. Normalized binary: " + normalized + " (exponent = " + exponent + ")<br>";
+
+            steps += "6. Exponent with bias (127): " + biasedExponent + "<br>";
+
+            steps += "7. Mantissa: " + mantissa + "<br>";
+
+            let ieee754 = signBit + biasedExponent.padStart(8, '0') + mantissa;
+
+            steps += "8. IEEE 754 format: " + ieee754 + "<br>";
+
+            document.getElementById('result').innerText = `IEEE 754 format = ${ieee754}`;
+            document.getElementById('steps').innerHTML = steps;
+        }
+    </script>
+</body>
+</html>
